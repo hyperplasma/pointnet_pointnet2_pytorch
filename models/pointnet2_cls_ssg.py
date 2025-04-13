@@ -4,7 +4,7 @@ from pointnet2_utils import PointNetSetAbstraction
 
 
 class get_model(nn.Module):
-    def __init__(self,num_class,normal_channel=True):
+    def __init__(self, num_class, normal_channel=True):
         super(get_model, self).__init__()
         in_channel = 6 if normal_channel else 3
         self.normal_channel = normal_channel
@@ -21,7 +21,7 @@ class get_model(nn.Module):
 
     def forward(self, xyz):
         B, _, _ = xyz.shape
-        if self.normal_channel:
+        if self.normal_channel: # 包含法向量
             norm = xyz[:, 3:, :]
             xyz = xyz[:, :3, :]
         else:
@@ -33,11 +33,8 @@ class get_model(nn.Module):
         x = self.drop1(F.relu(self.bn1(self.fc1(x))))
         x = self.drop2(F.relu(self.bn2(self.fc2(x))))
         x = self.fc3(x)
-        x = F.log_softmax(x, -1)
-
-
+        x = F.log_softmax(x, -1)    # 计算对数概率
         return x, l3_points
-
 
 
 class get_loss(nn.Module):
@@ -46,5 +43,4 @@ class get_loss(nn.Module):
 
     def forward(self, pred, target, trans_feat):
         total_loss = F.nll_loss(pred, target)
-
         return total_loss
