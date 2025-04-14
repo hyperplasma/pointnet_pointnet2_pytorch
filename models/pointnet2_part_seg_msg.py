@@ -5,19 +5,19 @@ from models.pointnet2_utils import PointNetSetAbstractionMsg,PointNetSetAbstract
 
 
 class get_model(nn.Module):
-    def __init__(self, num_classes, normal_channel=False):
+    def __init__(self, num_classes, normal_channel=False):  # num_part = 50
         super(get_model, self).__init__()
         if normal_channel:
             additional_channel = 3
         else:
             additional_channel = 0
         self.normal_channel = normal_channel
-        self.sa1 = PointNetSetAbstractionMsg(512, [0.1, 0.2, 0.4], [32, 64, 128], 3+additional_channel, [[32, 32, 64], [64, 64, 128], [64, 96, 128]])
-        self.sa2 = PointNetSetAbstractionMsg(128, [0.4,0.8], [64, 128], 128+128+64, [[128, 128, 256], [128, 196, 256]])
+        self.sa1 = PointNetSetAbstractionMsg(512, [0.1, 0.2, 0.4], [32, 64, 128], 3 + additional_channel, [[32, 32, 64], [64, 64, 128], [64, 96, 128]])
+        self.sa2 = PointNetSetAbstractionMsg(128, [0.4,0.8], [64, 128], 128 + 128 + 64, [[128, 128, 256], [128, 196, 256]])
         self.sa3 = PointNetSetAbstraction(npoint=None, radius=None, nsample=None, in_channel=512 + 3, mlp=[256, 512, 1024], group_all=True)
         self.fp3 = PointNetFeaturePropagation(in_channel=1536, mlp=[256, 256])
         self.fp2 = PointNetFeaturePropagation(in_channel=576, mlp=[256, 128])
-        self.fp1 = PointNetFeaturePropagation(in_channel=150+additional_channel, mlp=[128, 128])
+        self.fp1 = PointNetFeaturePropagation(in_channel=150 + additional_channel, mlp=[128, 128])
         self.conv1 = nn.Conv1d(128, 128, 1)
         self.bn1 = nn.BatchNorm1d(128)
         self.drop1 = nn.Dropout(0.5)
@@ -25,7 +25,7 @@ class get_model(nn.Module):
 
     def forward(self, xyz, cls_label):
         # Set Abstraction layers
-        B,C,N = xyz.shape
+        B, C, N = xyz.shape
         if self.normal_channel:
             l0_points = xyz
             l0_xyz = xyz[:,:3,:]

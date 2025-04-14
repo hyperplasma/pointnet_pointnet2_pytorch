@@ -45,7 +45,6 @@ class get_loss(nn.Module):
         super(get_loss, self).__init__()
     def forward(self, pred, target, trans_feat, weight):
         total_loss = F.nll_loss(pred, target, weight=weight)
-
         return total_loss
 
 if __name__ == '__main__':
