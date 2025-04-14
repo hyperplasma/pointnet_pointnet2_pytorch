@@ -42,7 +42,8 @@ def test(model, loader, num_class=40, vote_num=1):
             points, target = points.cuda(), target.cuda()
 
         points = points.transpose(2, 1)
-        vote_pool = torch.zeros(target.size()[0], num_class).cuda()
+        # vote_pool = torch.zeros(target.size()[0], num_class).cuda()
+        vote_pool = torch.zeros(target.size()[0], num_class)    # TEMP
 
         for _ in range(vote_num):
             pred, _ = classifier(points)
@@ -102,7 +103,7 @@ def main(args):
     if not args.use_cpu:
         classifier = classifier.cuda()
 
-    checkpoint = torch.load(str(experiment_dir) + '/checkpoints/best_model.pth')
+    checkpoint = torch.load(str(experiment_dir) + '/checkpoints/best_model.pth', weights_only=False)    # TEMP forced
     classifier.load_state_dict(checkpoint['model_state_dict'])
 
     with torch.no_grad():
