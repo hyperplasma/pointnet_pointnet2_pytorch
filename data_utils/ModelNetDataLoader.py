@@ -14,6 +14,7 @@ from torch.utils.data import Dataset
 warnings.filterwarnings('ignore')
 
 
+# 点云归一化，以centroid为中心，半径为1
 def pc_normalize(pc):
     centroid = np.mean(pc, axis=0)
     pc = pc - centroid
@@ -22,6 +23,7 @@ def pc_normalize(pc):
     return pc
 
 
+# 最远点采样
 def farthest_point_sample(point, npoint):
     """
     Input:
@@ -120,7 +122,7 @@ class ModelNetDataLoader(Dataset):
             cls = self.classes[self.datapath[index][0]]
             label = np.array([cls]).astype(np.int32)
             point_set = np.loadtxt(fn[1], delimiter=',').astype(np.float32)
-
+            # 数据集采样npoints个点送入网络
             if self.uniform:
                 point_set = farthest_point_sample(point_set, self.npoints)
             else:
